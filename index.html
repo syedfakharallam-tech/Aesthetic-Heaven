@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aesthetic Heaven – Premium Skincare & Haircare in Pakistan</title>
+    <meta name="description" content="Shop medicated skincare and haircare products in Pakistan. Acne, melasma, hairfall solutions. Order directly via WhatsApp.">
+    
+    <!-- Tailwind CSS with class strategy for dark mode -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class'
+      }
+    </script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --pastel-beige: #FAF7F2;
+            --pastel-pink: #FDF2F8;
+            --primary-pink: #F9A8D4;
+            --navy-dark: #121826;
+            --transition-speed: 0.3s;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--pastel-beige);
+            color: #374151;
+            scroll-behavior: smooth;
+            transition: background-color var(--transition-speed), color var(--transition-speed);
+        }
+
+        .dark body {
+            background-color: #0f172a;
+            color: #e2e8f0;
+        }
+
+        .font-serif {
+            font-family: 'Playfair Display', serif;
+        }
+
+        .glass {
+          background: rgba(255, 255, 255, 0.85);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          transition: background-color var(--transition-speed);
+        }
+
+        .dark .glass {
+            background: rgba(15, 23, 42, 0.85);
+            border-color: #1e293b;
+        }
+
+        .product-card {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            background-color: white;
+        }
+        .dark .product-card {
+            background-color: #1e293b;
+            border-color: #334155;
+        }
+
+        .product-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px -12px rgba(244, 114, 182, 0.2);
+        }
+        
+        .contact-action-card {
+            background-color: white;
+            border-radius: 2.5rem;
+            padding: 3rem 2.5rem;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+            width: 100%;
+            max-width: 320px;
+        }
+        .dark .contact-action-card {
+            background-color: #1e293b;
+        }
+
+        .contact-action-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.6s ease-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Nav Link Hover */
+        .nav-link {
+            position: relative;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -4px;
+            left: 0;
+            background-color: var(--primary-pink);
+            transition: width 0.3s ease;
+        }
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        .btn-icon {
+            padding: 0.5rem;
+            border-radius: 0.75rem;
+            transition: background-color 0.2s;
+        }
+        .btn-icon:hover {
+            background-color: rgba(249, 168, 212, 0.1);
+        }
+    </style>
+
+    <script type="importmap">
+    {
+      "imports": {
+        "react": "https://esm.sh/react@18.2.0",
+        "react-dom": "https://esm.sh/react-dom@18.2.0",
+        "lucide-react": "https://esm.sh/lucide-react@0.344.0",
+        "htm": "https://esm.sh/htm@3.1.1"
+      }
+    }
+    </script>
+</head>
+<body class="light">
+    <div id="root"></div>
+
+    <script type="module">
+        import React, { useState, useEffect, useRef } from 'react';
+        import { createRoot } from 'react-dom';
+        import htm from 'htm';
+        import { 
+            MessageCircle, Menu, X, Sparkles, Beaker, ShieldCheck, 
+            ArrowRight, Heart, Plus, Trash2, Edit3, LogOut, 
+            Phone, Mail, User, Sun, Moon, Upload, Image as ImageIcon, Camera, LayoutGrid, Layers, Lock
+        } from 'lucide-react';
+
+        const html = htm.bind(React.createElement);
+
+        const WHATSAPP_NUMBER = '+923132504525';
+        const WHATSAPP_LINK = `https://wa.me/${WHATSAPP_NUMBER.replace(/\D/g, '')}`;
+        const TIKTOK_LINK = 'https://tiktok.com/@aestheticheavenofficial';
+        const STORAGE_KEY = 'aesthetic_heaven_v13_db';
+        const CATEGORIES_KEY = 'aesthetic_heaven_categories_v13';
+
+        const TikTokIcon = ({ size = 20, className = "" }) => html`
+            <svg 
+                width=${size} 
+                height=${size} 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                stroke="currentColor" 
+                strokeWidth="2" 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                className=${className}
+            >
+                <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" />
+            </svg>
+        `;
+
+        const INITIAL_PRODUCTS = [
+            { id: '1', name: 'Niacinamide Glow Serum', category: 'Skincare', image: 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&q=80&w=600', ingredients: '10% Niacinamide, Zinc PCA, Hyaluronic Acid', benefits: 'Controls oil, minimizes pores, and brightens skin tone.', price: '1850', featured: true },
+            { id: '2', name: 'Keratin Repair Mask', category: 'Haircare', image: 'https://images.unsplash.com/photo-1527799822367-a233b47b0ee6?auto=format&fit=crop&q=80&w=600', ingredients: 'Hydrolyzed Keratin, Biotin, Argan Oil', benefits: 'Deeply moisturizes, repairs damaged hair, and adds shine.', price: '2200', featured: true },
+            { id: '3', name: 'Salicylic Acid Cleanser', category: 'Skincare', image: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&q=80&w=600', ingredients: '2% Salicylic Acid, Green Tea Extract', benefits: 'Anti-acne, deep pore cleansing, and soothing.', price: '1450', featured: true },
+            { id: '4', name: 'Biotin Growth Shampoo', category: 'Haircare', image: 'https://images.unsplash.com/photo-1535585209827-a15fcdbc4c2d?auto=format&fit=crop&q=80&w=600', ingredients: 'Biotin, Onion Extract, Caffeine', benefits: 'Reduces hair fall and strengthens roots.', price: '1600', featured: false }
+        ];
+
+        const INITIAL_CATEGORIES = ['Skincare', 'Haircare'];
+
+        const WAButton = ({ product, label = "Order on WhatsApp", className = "", variant = "primary" }) => {
+            const msg = product 
+                ? encodeURIComponent(`Hi Aesthetic Heaven! I'd like to order: ${product}.`)
+                : encodeURIComponent(`Hi Aesthetic Heaven! I'm interested in your premium products.`);
+            
+            const styles = {
+                primary: "bg-pink-400 hover:bg-pink-500 text-white shadow-lg",
+                outline: "border-2 border-pink-400 text-pink-500 hover:bg-pink-50 dark:hover:bg-pink-900/20",
+                dark: "bg-gray-900 hover:bg-gray-800 text-white"
+            };
+
+            return html`
+                <a href="${WHATSAPP_LINK}?text=${msg}" target="_blank" className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full font-semibold transition-all duration-300 ${styles[variant]} ${className}">
+                    <${MessageCircle} size=${18} />
+                    <span>${label}</span>
+                </a>
+            `;
+        };
+
+        const ProductCard = ({ product }) => html`
+            <div className="rounded-[2.5rem] overflow-hidden border border-pink-50 dark:border-slate-700 flex flex-col product-card group h-full">
+                <div className="relative aspect-square overflow-hidden bg-pink-50/20">
+                    <img src="${product.image}" alt="${product.name}" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                    <div className="absolute top-4 left-4">
+                        <span className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-md text-pink-500 text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full shadow-sm border border-pink-100 dark:border-slate-700">${product.category}</span>
+                    </div>
+                </div>
+                <div className="p-8 flex flex-col flex-grow space-y-4">
+                    <div className="flex justify-between items-start">
+                        <h3 className="text-xl font-serif font-bold text-slate-800 dark:text-slate-100 leading-tight">${product.name}</h3>
+                        <span className="text-pink-500 font-bold whitespace-nowrap">Rs. ${product.price}</span>
+                    </div>
+                    <div className="flex-grow space-y-4">
+                        <div>
+                            <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1 mb-1"><${Beaker} size=${10} /> Ingredients</span>
+                            <p className="text-xs text-slate-500 dark:text-slate-400 italic line-clamp-2 leading-relaxed">${product.ingredients}</p>
+                        </div>
+                        <div>
+                            <span className="text-[9px] font-bold text-teal-600 dark:text-teal-400 uppercase tracking-widest flex items-center gap-1 mb-1"><${ShieldCheck} size=${10} /> Benefits</span>
+                            <p className="text-sm text-slate-600 dark:text-slate-300 line-clamp-3 leading-relaxed">${product.benefits}</p>
+                        </div>
+                    </div>
+                    <${WAButton} product="${product.name}" label="Order Now" className="w-full text-sm" />
+                </div>
+            </div>
+        `;
+
+        const AestheticHeavenApp = () => {
+            const [currentPage, setCurrentPage] = useState('home');
+            const [products, setProducts] = useState([]);
+            const [categories, setCategories] = useState([]);
+            const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
+            const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+            const [adminAction, setAdminAction] = useState({ type: null, product: null });
+            const [isDarkMode, setIsDarkMode] = useState(false);
+
+            useEffect(() => {
+                const savedProducts = localStorage.getItem(STORAGE_KEY);
+                if (savedProducts) setProducts(JSON.parse(savedProducts));
+                else {
+                    setProducts(INITIAL_PRODUCTS);
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_PRODUCTS));
+                }
+
+                const savedCategories = localStorage.getItem(CATEGORIES_KEY);
+                if (savedCategories) setCategories(JSON.parse(savedCategories));
+                else {
+                    setCategories(INITIAL_CATEGORIES);
+                    localStorage.setItem(CATEGORIES_KEY, JSON.stringify(INITIAL_CATEGORIES));
+                }
+                
+                // Initialize theme
+                const savedTheme = localStorage.getItem('theme');
+                if (savedTheme === 'dark') {
+                    setIsDarkMode(true);
+                    document.documentElement.classList.add('dark');
+                    document.body.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                    document.body.classList.remove('dark');
+                }
+                window.scrollTo(0,0);
+            }, []);
+
+            const toggleTheme = () => {
+                const newMode = !isDarkMode;
+                setIsDarkMode(newMode);
+                if (newMode) {
+                    document.documentElement.classList.add('dark');
+                    document.body.classList.add('dark');
+                    localStorage.setItem('theme', 'dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                    document.body.classList.remove('dark');
+                    localStorage.setItem('theme', 'light');
+                }
+            };
+
+            const navigate = (page) => {
+                setCurrentPage(page);
+                setIsMobileMenuOpen(false);
+                window.scrollTo(0,0);
+            };
+
+            const updateProducts = (newList) => {
+                setProducts(newList);
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(newList));
+            };
+
+            const updateCategories = (newList) => {
+                setCategories(newList);
+                localStorage.setItem(CATEGORIES_KEY, JSON.stringify(newList));
+            };
+
+            const Home = () => html`
+                <div className="animate-fade-in space-y-24">
+                    <section className="relative min-h-screen flex items-center bg-[#FAF7F2] dark:bg-slate-900 pt-20 overflow-hidden transition-colors duration-300">
+                        <div className="max-w-7xl mx-auto px-6 relative z-10 w-full grid lg:grid-cols-2 gap-12 items-center">
+                            <div className="space-y-8">
+                                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white dark:bg-slate-800 border border-pink-100 dark:border-slate-700 text-pink-500 text-[10px] font-bold uppercase tracking-widest shadow-sm">
+                                    <${Sparkles} size=${14} /> <span>Dermatologist Approved Solutions</span>
+                                </div>
+                                <h1 className="text-5xl md:text-7xl font-serif font-bold text-slate-900 dark:text-slate-100 leading-[1.1]">Premium Medicated <span className="text-pink-400 italic">Skincare</span> & Haircare</h1>
+                                <p className="text-lg text-slate-600 dark:text-slate-400 leading-relaxed max-w-lg">Science-backed solutions for Pakistani skin. Experience the transformation with our high-potency ingredients designed for healthy results.</p>
+                                <div className="flex flex-wrap gap-4 pt-4">
+                                    <button onClick=${() => navigate('products')} className="px-8 py-4 bg-slate-900 dark:bg-pink-400 text-white rounded-full font-medium hover:opacity-90 transition-all shadow-lg flex items-center gap-2">View Products <${ArrowRight} size=${18} /></button>
+                                    <${WAButton} variant="outline" className="px-8 py-4 bg-white dark:bg-slate-800" />
+                                </div>
+                            </div>
+                            <div className="hidden lg:block relative h-full">
+                                <div className="rounded-[40px] overflow-hidden shadow-2xl rotate-2 hover:rotate-0 transition-transform duration-700 aspect-[4/5] bg-pink-100 dark:bg-slate-800">
+                                    <img src="https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?auto=format&fit=crop&q=80&w=800" className="w-full h-full object-cover" />
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                    <section className="max-w-7xl mx-auto px-6 pb-24">
+                        <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
+                            <div className="max-w-xl">
+                                <h2 className="text-3xl md:text-4xl font-serif font-bold text-slate-900 dark:text-slate-100 mb-4">Our Bestsellers</h2>
+                                <p className="text-slate-600 dark:text-slate-400">Discover the products that are transforming beauty routines across Pakistan.</p>
+                            </div>
+                            <button onClick=${() => navigate('products')} className="text-pink-500 font-bold hover:text-pink-600 transition-colors flex items-center gap-2 group">Shop Collection <${ArrowRight} size=${18} className="group-hover:translate-x-1 transition-transform" /></button>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                            ${products.filter(p => p.featured).map(p => html`<${ProductCard} key=${p.id} product=${p} />`)}
+                        </div>
+                    </section>
+                </div>
+            `;
+
+            const Contact = () => html`
+                <div className="max-w-7xl mx-auto px-6 py-40 animate-fade-in flex flex-col items-center">
+                    <div className="text-center mb-16">
+                        <h1 className="text-5xl md:text-6xl font-serif font-bold text-slate-900 dark:text-slate-100 mb-4">Get in Touch</h1>
+                        <p className="text-slate-500 dark:text-slate-400 max-w-lg mx-auto">Reach out to us directly via WhatsApp for orders, consultations, and support.</p>
+                    </div>
+                    
+                    <div className="flex justify-center w-full max-w-4xl">
+                        <div className="contact-action-card border border-pink-50 dark:border-slate-700">
+                            <div className="w-16 h-16 bg-pink-50 dark:bg-slate-800 rounded-full flex items-center justify-center text-pink-400">
+                                <${Phone} size=${28} />
+                            </div>
+                            <div className="text-center">
+                                <h3 className="font-serif font-bold text-2xl mb-1 text-slate-900 dark:text-slate-100">WhatsApp</h3>
+                                <p className="text-base text-slate-500 dark:text-slate-400">${WHATSAPP_NUMBER}</p>
+                            </div>
+                            <${WAButton} label="Chat with Us" className="w-full py-4 text-lg" />
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            const Admin = () => {
+                const [username, setUsername] = useState('');
+                const [password, setPassword] = useState('');
+                const [previewImage, setPreviewImage] = useState(adminAction.product?.image || '');
+                const [newCategory, setNewCategory] = useState('');
+                const fileInputRef = useRef(null);
+
+                const handleLogin = (e) => {
+                    e.preventDefault();
+                    if (username === 'admin' && password === 'admin123') setIsAdminLoggedIn(true);
+                    else alert('Invalid Credentials');
+                };
+
+                const handleFileChange = (e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onloadend = () => {
+                            setPreviewImage(reader.result);
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                };
+
+                const handleAddCategory = () => {
+                    if (newCategory && !categories.includes(newCategory)) {
+                        updateCategories([...categories, newCategory]);
+                        setNewCategory('');
+                    }
+                };
+
+                const handleRemoveCategory = (cat) => {
+                    if (confirm(`Are you sure you want to delete "${cat}"? Products in this category will still remain but their category label will be "${cat}".`)) {
+                        updateCategories(categories.filter(c => c !== cat));
+                    }
+                };
+
+                const handleSave = (e) => {
+                    e.preventDefault();
+                    const fd = new FormData(e.target);
+                    const newProd = {
+                        id: adminAction.product?.id || Date.now().toString(),
+                        name: fd.get('name'),
+                        category: fd.get('category'),
+                        image: previewImage || fd.get('image-url'),
+                        ingredients: fd.get('ingredients'),
+                        benefits: fd.get('benefits'),
+                        price: fd.get('price'),
+                        featured: fd.get('featured') === 'on'
+                    };
+                    const newList = adminAction.product ? products.map(p => p.id === newProd.id ? newProd : p) : [...products, newProd];
+                    updateProducts(newList);
+                    setAdminAction({ type: null, product: null });
+                };
+
+                if (!isAdminLoggedIn) {
+                    return html`
+                        <div className="min-h-screen flex items-center justify-center bg-pastel-pink dark:bg-slate-900 p-6 transition-colors">
+                            <form onSubmit=${handleLogin} className="bg-white dark:bg-slate-800 p-10 rounded-[2.5rem] shadow-2xl w-full max-w-md space-y-8 animate-fade-in border border-pink-50 dark:border-slate-700">
+                                <div className="text-center space-y-2">
+                                    <h2 className="text-3xl font-serif font-bold text-slate-900 dark:text-slate-100">Owner Access</h2>
+                                </div>
+                                <div className="space-y-4">
+                                    <input placeholder="Username" value=${username} onChange=${e => setUsername(e.target.value)} className="w-full px-6 py-4 rounded-2xl bg-slate-50 dark:bg-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-pink-300" />
+                                    <input type="password" placeholder="Password" value=${password} onChange=${e => setPassword(e.target.value)} className="w-full px-6 py-4 rounded-2xl bg-slate-50 dark:bg-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-pink-300" />
+                                </div>
+                                <button type="submit" className="w-full py-4 bg-pink-400 text-white font-bold rounded-2xl hover:bg-pink-500 shadow-lg">Login</button>
+                            </form>
+                        </div>
+                    `;
+                }
+
+                return html`
+                    <div className="max-w-7xl mx-auto px-6 py-32 animate-fade-in min-h-screen space-y-12">
+                        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                            <div>
+                                <h1 className="text-4xl font-serif font-bold text-slate-900 dark:text-slate-100">Admin Dashboard</h1>
+                                <p className="text-slate-500 dark:text-slate-400">Manage your products and categories.</p>
+                            </div>
+                            <div className="flex gap-4">
+                                <button onClick=${() => { setAdminAction({ type: 'add', product: null }); setPreviewImage(''); }} className="bg-pink-400 text-white px-6 py-2 rounded-full font-bold shadow-md hover:bg-pink-500 flex items-center gap-2"><${Plus} size=${18}/> Add Product</button>
+                                <button onClick=${() => setIsAdminLoggedIn(false)} className="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 px-6 py-2 rounded-full font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"><${LogOut} size=${18}/></button>
+                            </div>
+                        </div>
+
+                        <!-- Categories Management Section -->
+                        <section className="bg-white dark:bg-slate-800 p-8 rounded-[2.5rem] border border-pink-50 dark:border-slate-700 shadow-sm space-y-6">
+                            <div className="flex items-center gap-3 mb-2">
+                                <div className="bg-pink-100 dark:bg-pink-900/20 p-2 rounded-xl text-pink-500"><${Layers} size=${20} /></div>
+                                <h2 className="text-2xl font-serif font-bold dark:text-white text-slate-900">Manage Categories</h2>
+                            </div>
+                            <div className="flex gap-3 max-w-md">
+                                <input 
+                                    value=${newCategory} 
+                                    onChange=${e => setNewCategory(e.target.value)} 
+                                    placeholder="New Category Name" 
+                                    className="flex-grow p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 dark:text-white outline-none border border-transparent focus:border-pink-300 transition-all"
+                                />
+                                <button onClick=${handleAddCategory} className="bg-pink-400 text-white p-4 rounded-2xl hover:bg-pink-500 transition-all"><${Plus} /></button>
+                            </div>
+                            <div className="flex flex-wrap gap-3">
+                                ${categories.map(cat => html`
+                                    <div key=${cat} className="flex items-center gap-3 px-6 py-2 rounded-full bg-slate-50 dark:bg-slate-900 text-slate-700 dark:text-slate-200 border border-slate-100 dark:border-slate-700 font-medium group">
+                                        <span>${cat}</span>
+                                        <button onClick=${() => handleRemoveCategory(cat)} className="text-slate-300 hover:text-red-500 transition-colors"><${Trash2} size=${14} /></button>
+                                    </div>
+                                `)}
+                            </div>
+                        </section>
+
+                        <div className="grid gap-6">
+                            <div className="flex items-center gap-3 mb-2">
+                                <div className="bg-pink-100 dark:bg-pink-900/20 p-2 rounded-xl text-pink-500"><${LayoutGrid} size=${20} /></div>
+                                <h2 className="text-2xl font-serif font-bold dark:text-white text-slate-900">Your Products</h2>
+                            </div>
+                            ${products.map(p => html`
+                                <div key=${p.id} className="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-pink-50 dark:border-slate-700 flex items-center gap-6 group hover:shadow-lg transition-all">
+                                    <img src=${p.image} className="w-20 h-20 rounded-2xl object-cover shadow-sm" />
+                                    <div className="flex-grow">
+                                        <h4 className="font-bold text-xl dark:text-white">${p.name}</h4>
+                                        <p className="text-xs text-pink-400 font-bold uppercase tracking-widest">${p.category} • Rs. ${p.price}</p>
+                                    </div>
+                                    <div className="flex gap-3">
+                                        <button onClick=${() => { setAdminAction({ type: 'edit', product: p }); setPreviewImage(p.image); }} className="p-3 bg-blue-50 dark:bg-blue-900/20 text-blue-500 rounded-xl hover:bg-blue-500 hover:text-white transition-all"><${Edit3} size=${20}/></button>
+                                        <button onClick=${() => { if(confirm('Delete product?')) updateProducts(products.filter(x => x.id !== p.id)) }} className="p-3 bg-red-50 dark:bg-red-900/20 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-all"><${Trash2} size=${20}/></button>
+                                    </div>
+                                </div>
+                            `)}
+                        </div>
+
+                        ${adminAction.type && html`
+                            <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/50 backdrop-blur-sm">
+                                <form onSubmit=${handleSave} className="bg-white dark:bg-slate-800 p-10 rounded-[3rem] shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto space-y-6 border border-pink-50 dark:border-slate-700">
+                                    <div className="flex justify-between items-center mb-6">
+                                        <h2 className="text-2xl font-serif font-bold dark:text-white">${adminAction.type === 'edit' ? 'Edit Product' : 'Add New Product'}</h2>
+                                        <button type="button" onClick=${() => setAdminAction({ type: null, product: null })} className="dark:text-white text-slate-900"><${X} size=${24}/></button>
+                                    </div>
+                                    
+                                    <div className="p-6 bg-slate-50 dark:bg-slate-900/50 rounded-3xl border border-dashed border-slate-300 dark:border-slate-700">
+                                        <div className="flex flex-col items-center gap-4">
+                                            ${previewImage ? html`
+                                                <div className="relative group">
+                                                    <img src=${previewImage} className="w-40 h-40 rounded-2xl object-cover shadow-md border-4 border-white" />
+                                                    <button type="button" onClick=${() => { setPreviewImage(''); if(fileInputRef.current) fileInputRef.current.value=''; }} className="absolute -top-3 -right-3 bg-red-500 text-white p-2 rounded-full shadow-lg hover:scale-110 transition-transform"><${X} size=${16} /></button>
+                                                </div>
+                                            ` : html`
+                                                <button type="button" onClick=${() => fileInputRef.current.click()} className="w-full flex flex-col items-center gap-3 py-10 rounded-2xl hover:bg-white dark:hover:bg-slate-800 transition-all group">
+                                                    <div className="bg-pink-100 dark:bg-pink-900/20 p-4 rounded-full text-pink-500 group-hover:scale-110 transition-transform">
+                                                        <${ImageIcon} size=${32} />
+                                                    </div>
+                                                    <div className="text-center">
+                                                        <span className="block text-sm font-bold text-slate-700 dark:text-slate-200">Choose Image from Device</span>
+                                                        <span className="text-xs text-slate-400">Supported formats: JPG, PNG, WEBP</span>
+                                                    </div>
+                                                </button>
+                                            `}
+                                            
+                                            <input ref=${fileInputRef} type="file" accept="image/*" onChange=${handleFileChange} className="hidden" />
+                                            
+                                            <div className="w-full flex items-center gap-4 py-2">
+                                                <div className="h-[1px] flex-grow bg-slate-200 dark:bg-slate-700"></div>
+                                                <span className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">OR USE URL</span>
+                                                <div className="h-[1px] flex-grow bg-slate-200 dark:bg-slate-700"></div>
+                                            </div>
+                                            
+                                            <input name="image-url" value=${!previewImage.startsWith('data:') ? previewImage : ''} onChange=${e => setPreviewImage(e.target.value)} placeholder="Enter external image link..." className="w-full p-4 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none focus:ring-2 focus:ring-pink-300 text-sm dark:text-white" />
+                                        </div>
+                                    </div>
+
+                                    <div className="grid md:grid-cols-2 gap-6">
+                                        <div className="space-y-1">
+                                            <label className="text-[10px] font-bold text-slate-400 uppercase ml-2 tracking-widest">Product Name</label>
+                                            <input name="name" defaultValue=${adminAction.product?.name} placeholder="e.g. Vitamin C Serum" required className="w-full p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 dark:text-white outline-none border border-transparent focus:border-pink-300" />
+                                        </div>
+                                        <div className="space-y-1">
+                                            <label className="text-[10px] font-bold text-slate-400 uppercase ml-2 tracking-widest">Category</label>
+                                            <select name="category" defaultValue=${adminAction.product?.category} className="w-full p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 dark:text-white outline-none border border-transparent focus:border-pink-300">
+                                                ${categories.map(cat => html`<option key=${cat} value=${cat}>${cat}</option>`)}
+                                            </select>
+                                        </div>
+                                        <div className="space-y-1">
+                                            <label className="text-[10px] font-bold text-slate-400 uppercase ml-2 tracking-widest">Price (Rs.)</label>
+                                            <input name="price" defaultValue=${adminAction.product?.price} placeholder="e.g. 1500" required className="w-full p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 dark:text-white outline-none border border-transparent focus:border-pink-300" />
+                                        </div>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <label className="text-[10px] font-bold text-slate-400 uppercase ml-2 tracking-widest">Ingredients</label>
+                                        <textarea name="ingredients" defaultValue=${adminAction.product?.ingredients} placeholder="Highlight the key ingredients..." required className="w-full p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 dark:text-white outline-none h-24 border border-transparent focus:border-pink-300" />
+                                    </div>
+                                    <div className="space-y-1">
+                                        <label className="text-[10px] font-bold text-slate-400 uppercase ml-2 tracking-widest">Product Benefits</label>
+                                        <textarea name="benefits" defaultValue=${adminAction.product?.benefits} placeholder="Explain why customers need this..." required className="w-full p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 dark:text-white outline-none h-24 border border-transparent focus:border-pink-300" />
+                                    </div>
+                                    
+                                    <label className="flex items-center gap-3 p-4 bg-slate-50 dark:bg-slate-900/30 rounded-2xl cursor-pointer hover:bg-pink-50 dark:hover:bg-pink-900/10 transition-colors">
+                                        <input type="checkbox" name="featured" defaultChecked=${adminAction.product?.featured} className="w-6 h-6 accent-pink-400 rounded-lg" />
+                                        <span className="text-sm font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wide">Pin to Homepage (Bestseller)</span>
+                                    </label>
+                                    
+                                    <button type="submit" className="w-full py-5 bg-pink-400 text-white font-bold rounded-2xl shadow-xl hover:bg-pink-500 transition-all transform active:scale-[0.98]">
+                                        Confirm & Save Product
+                                    </button>
+                                </form>
+                            </div>
+                        `}
+                    </div>
+                `;
+            };
+
+            const ProductsPage = () => {
+                const [filter, setFilter] = useState('All');
+                const filtered = products.filter(p => filter === 'All' || p.category === filter);
+                return html`
+                    <div className="max-w-7xl mx-auto px-6 py-32 animate-fade-in min-h-screen">
+                        <div className="text-center max-w-2xl mx-auto mb-16 space-y-6">
+                            <h1 className="text-4xl md:text-5xl font-serif font-bold text-slate-900 dark:text-slate-100">The Collection</h1>
+                            <div className="flex justify-center gap-2 flex-wrap">
+                                <button onClick=${() => setFilter('All')} className="px-6 py-2 rounded-full text-sm font-medium transition-all ${filter === 'All' ? 'bg-pink-400 text-white shadow-md' : 'bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-pink-50 border border-pink-50 dark:border-slate-700'}">All</button>
+                                ${categories.map(cat => html`
+                                    <button key=${cat} onClick=${() => setFilter(cat)} className="px-6 py-2 rounded-full text-sm font-medium transition-all ${filter === cat ? 'bg-pink-400 text-white shadow-md' : 'bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-pink-50 border border-pink-50 dark:border-slate-700'}">${cat}</button>
+                                `)}
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                            ${filtered.map(p => html`<${ProductCard} key=${p.id} product=${p} />`)}
+                        </div>
+                    </div>
+                `;
+            };
+
+            const AboutPage = () => html`
+                <div className="max-w-7xl mx-auto px-6 py-40 animate-fade-in space-y-20">
+                    <div className="grid lg:grid-cols-2 gap-16 items-center">
+                        <div className="space-y-8">
+                            <h1 className="text-5xl md:text-7xl font-serif font-bold text-slate-900 dark:text-slate-100 leading-tight">Medicated Beauty <span className="text-pink-400 italic">Redefined.</span></h1>
+                            <p className="text-lg text-slate-600 dark:text-slate-400 leading-relaxed">Aesthetic Heaven bridge the gap between expensive clinical treatments and everyday care. Our formulations are specifically designed for the unique needs of Pakistani skin types.</p>
+                        </div>
+                        <div className="rounded-[3rem] overflow-hidden shadow-2xl">
+                            <img src="https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&q=80&w=800" className="w-full h-full object-cover" />
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            const FAQPage = () => html`
+                <div className="max-w-3xl mx-auto px-6 py-40 animate-fade-in min-h-screen">
+                    <h1 className="text-4xl font-serif font-bold text-center mb-16 dark:text-white text-slate-900">Help Center</h1>
+                    <div className="space-y-4">
+                        ${[
+                            { q: "Is delivery nationwide?", a: "Yes, we deliver across all cities in Pakistan." },
+                            { q: "How do I order?", a: "Click 'Order Now' on any product to chat with us directly via WhatsApp." },
+                            { q: "Are your products dermatologist tested?", a: "Yes, all our medicated formulations are tested for safety and efficacy." }
+                        ].map((f, i) => html`
+                            <div key=${i} className="bg-white dark:bg-slate-800 rounded-3xl border border-pink-50 dark:border-slate-700 overflow-hidden shadow-sm">
+                                <div className="p-8 font-bold text-slate-800 dark:text-slate-100 bg-pink-50/20 dark:bg-pink-900/10">${f.q}</div>
+                                <div className="p-8 text-slate-500 dark:text-slate-400 leading-relaxed">${f.a}</div>
+                            </div>
+                        `)}
+                    </div>
+                </div>
+            `;
+
+            return html`
+                <div className="flex flex-col min-h-screen overflow-x-hidden transition-colors">
+                    <nav className="fixed top-0 w-full z-50 glass border-b border-pink-100 dark:border-slate-800 h-20 flex items-center">
+                        <div className="max-w-7xl mx-auto px-6 w-full flex items-center justify-between">
+                            <div onClick=${() => navigate('home')} className="flex items-center gap-2 cursor-pointer">
+                                <div className="bg-pink-100 dark:bg-pink-900/20 p-2 rounded-xl text-pink-500"><${Sparkles} /></div>
+                                <span className="text-2xl font-serif font-bold text-slate-900 dark:text-white">Aesthetic <span className="text-pink-400">Heaven</span></span>
+                            </div>
+                            
+                            <!-- Shared Icons Area -->
+                            <div className="flex items-center gap-2 sm:gap-4 ml-auto">
+                                <div className="hidden lg:flex items-center gap-6 mr-4">
+                                    ${['Home', 'Products', 'About', 'Contact', 'FAQ'].map(i => html`
+                                        <button key=${i} onClick=${() => navigate(i.toLowerCase())} className="text-sm font-semibold text-slate-500 dark:text-gray-400 hover:text-pink-500 dark:hover:text-pink-400 transition-colors nav-link ${currentPage === i.toLowerCase() ? 'text-pink-500 dark:text-pink-400' : ''}">${i}</button>
+                                    `)}
+                                </div>
+                                
+                                <button onClick=${toggleTheme} className="btn-icon text-slate-500 dark:text-slate-300" title="Toggle Dark/Light Mode">
+                                    ${isDarkMode ? html`<${Sun} size=${20}/>` : html`<${Moon} size=${20}/>`}
+                                </button>
+                                
+                                <button onClick=${() => setIsMobileMenuOpen(true)} className="lg:hidden p-2 dark:text-white text-slate-900 ml-2">
+                                    <${Menu} size=${28}/>
+                                </button>
+                            </div>
+                        </div>
+                    </nav>
+
+                    ${isMobileMenuOpen && html`
+                        <div className="fixed inset-0 z-[60] bg-white dark:bg-slate-900 p-10 space-y-8 flex flex-col animate-in slide-in-from-right duration-300 transition-colors">
+                            <div className="flex justify-between items-center mb-10">
+                                <span className="text-2xl font-serif font-bold dark:text-white">Aesthetic <span className="text-pink-400">Heaven</span></span>
+                                <button onClick=${() => setIsMobileMenuOpen(false)} className="dark:text-white text-slate-900"><${X} size=${32} /></button>
+                            </div>
+                            ${['Home', 'Products', 'About', 'Contact', 'FAQ'].map(i => html`
+                                <button key=${i} onClick=${() => navigate(i.toLowerCase())} className="text-4xl font-serif font-bold text-left hover:text-pink-400 dark:text-white text-slate-900">${i}</button>
+                            `)}
+                        </div>
+                    `}
+
+                    <main className="flex-grow">
+                        ${currentPage === 'home' && html`<${Home} />`}
+                        ${currentPage === 'products' && html`<${ProductsPage} />`}
+                        ${currentPage === 'about' && html`<${AboutPage} />`}
+                        ${currentPage === 'contact' && html`<${Contact} />`}
+                        ${currentPage === 'admin' && html`<${Admin} />`}
+                        ${currentPage === 'faq' && html`<${FAQPage} />`}
+                    </main>
+
+                    <footer className="bg-white dark:bg-slate-900 border-t border-pink-100 dark:border-slate-800 pt-20 pb-12 transition-colors duration-300">
+                        <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-12 mb-20">
+                            <div className="space-y-6">
+                                <div className="flex items-center gap-2">
+                                    <div className="bg-pink-100 dark:bg-pink-900/20 p-2 rounded-xl text-pink-500"><${Sparkles} /></div>
+                                    <span className="text-2xl font-serif font-bold text-slate-900 dark:text-white">Aesthetic <span className="text-pink-400">Heaven</span></span>
+                                </div>
+                                <p className="text-slate-400 text-sm leading-relaxed">Pakistan's premier destination for medicated skin and hair solutions.</p>
+                                <div className="flex gap-4">
+                                    <a href="${TIKTOK_LINK}" target="_blank" className="p-3 bg-pink-50 dark:bg-slate-800 text-pink-500 rounded-full hover:bg-pink-100 dark:hover:bg-slate-700" title="Follow us on TikTok">
+                                        <${TikTokIcon} size=${20} />
+                                    </a>
+                                    <a href="${WHATSAPP_LINK}" target="_blank" className="p-3 bg-pink-50 dark:bg-slate-800 text-pink-500 rounded-full hover:bg-pink-100 dark:hover:bg-slate-700" title="Contact us on WhatsApp">
+                                        <${MessageCircle} size=${20} />
+                                    </a>
+                                </div>
+                            </div>
+                            <div>
+                                <h4 className="font-bold text-xs uppercase tracking-widest text-slate-400 mb-8">Navigation</h4>
+                                <ul className="space-y-4 text-sm font-semibold text-slate-600 dark:text-slate-400">
+                                    <li><button onClick=${() => navigate('products')} className="hover:text-pink-500">Shop All</button></li>
+                                    <li><button onClick=${() => navigate('faq')} className="hover:text-pink-500">FAQ</button></li>
+                                    <li><button onClick=${() => navigate('admin')} className="text-slate-300 dark:text-slate-600">Management</button></li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 className="font-bold text-xs uppercase tracking-widest text-slate-400 mb-8">Contact</h4>
+                                <ul className="space-y-4 text-sm text-slate-500 dark:text-slate-400">
+                                    <li className="flex items-center gap-3"><${Phone} size=${16} className="text-pink-400" /> ${WHATSAPP_NUMBER}</li>
+                                </ul>
+                            </div>
+                            <div className="bg-pastel-pink/50 dark:bg-pink-900/10 p-8 rounded-3xl border border-pink-100 dark:border-slate-800 flex flex-col justify-center text-center">
+                                <h4 className="font-serif font-bold text-xl mb-4 text-slate-900 dark:text-white">Fast Ordering</h4>
+                                <${WAButton} className="text-xs" />
+                            </div>
+                        </div>
+                        <div className="text-center pt-10 border-t border-slate-50 dark:border-slate-800 text-[10px] font-bold text-slate-300 dark:text-gray-600 uppercase tracking-[0.4em]">
+                            &copy; ${new Date().getFullYear()} AESTHETIC HEAVEN PAKISTAN.
+                        </div>
+                    </footer>
+                </div>
+            `;
+        };
+
+        const root = createRoot(document.getElementById('root'));
+        root.render(html`<${AestheticHeavenApp} />`);
+    </script>
+</body>
+</html>
