@@ -204,29 +204,29 @@
         };
 
         const ProductCard = ({ product }) => html`
-            <div className="rounded-[2.5rem] overflow-hidden border border-pink-50 dark:border-slate-700 flex flex-col product-card group h-full">
+            <div className="rounded-[1.5rem] sm:rounded-[2.5rem] overflow-hidden border border-pink-50 dark:border-slate-700 flex flex-col product-card group h-full">
                 <div className="relative aspect-square overflow-hidden bg-pink-50/20">
                     <img src="${product.image}" alt="${product.name}" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-                    <div className="absolute top-4 left-4">
-                        <span className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-md text-pink-500 text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full shadow-sm border border-pink-100 dark:border-slate-700">${product.category}</span>
+                    <div className="absolute top-2 left-2 sm:top-4 sm:left-4">
+                        <span className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-md text-pink-500 text-[8px] sm:text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 sm:px-3 sm:py-1 rounded-full shadow-sm border border-pink-100 dark:border-slate-700">${product.category}</span>
                     </div>
                 </div>
-                <div className="p-8 flex flex-col flex-grow space-y-4">
-                    <div className="flex justify-between items-start">
-                        <h3 className="text-xl font-serif font-bold text-slate-800 dark:text-slate-100 leading-tight">${product.name}</h3>
-                        <span className="text-pink-500 font-bold whitespace-nowrap">Rs. ${product.price}</span>
+                <div className="p-4 sm:p-8 flex flex-col flex-grow space-y-3 sm:space-y-4">
+                    <div className="flex flex-col sm:flex-row justify-between items-start gap-1 sm:gap-2">
+                        <h3 className="text-base sm:text-xl font-serif font-bold text-slate-800 dark:text-slate-100 leading-tight line-clamp-2">${product.name}</h3>
+                        <span className="text-pink-500 font-bold whitespace-nowrap text-sm sm:text-base">Rs. ${product.price}</span>
                     </div>
-                    <div className="flex-grow space-y-4">
-                        <div>
+                    <div className="flex-grow space-y-3 sm:space-y-4">
+                        <div className="hidden sm:block">
                             <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1 mb-1"><${Beaker} size=${10} /> Ingredients</span>
                             <p className="text-xs text-slate-500 dark:text-slate-400 italic line-clamp-2 leading-relaxed">${product.ingredients}</p>
                         </div>
                         <div>
-                            <span className="text-[9px] font-bold text-teal-600 dark:text-teal-400 uppercase tracking-widest flex items-center gap-1 mb-1"><${ShieldCheck} size=${10} /> Benefits</span>
-                            <p className="text-sm text-slate-600 dark:text-slate-300 line-clamp-3 leading-relaxed">${product.benefits}</p>
+                            <span className="text-[8px] sm:text-[9px] font-bold text-teal-600 dark:text-teal-400 uppercase tracking-widest flex items-center gap-1 mb-0.5 sm:mb-1"><${ShieldCheck} size=${10} /> Benefits</span>
+                            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 line-clamp-2 sm:line-clamp-3 leading-relaxed">${product.benefits}</p>
                         </div>
                     </div>
-                    <${WAButton} product="${product.name}" label="Order Now" className="w-full text-sm" />
+                    <${WAButton} product="${product.name}" label="Order Now" className="w-full text-[10px] sm:text-sm py-2 sm:py-3" />
                 </div>
             </div>
         `;
@@ -299,18 +299,18 @@
             };
 
             const Home = () => html`
-                <div className="animate-fade-in space-y-24">
-                    <section className="relative min-h-screen flex items-center bg-[#FAF7F2] dark:bg-slate-900 pt-20 overflow-hidden transition-colors duration-300">
+                <div className="animate-fade-in space-y-16 sm:space-y-24">
+                    <section className="relative min-h-[80vh] sm:min-h-screen flex items-center bg-[#FAF7F2] dark:bg-slate-900 pt-20 overflow-hidden transition-colors duration-300">
                         <div className="max-w-7xl mx-auto px-6 relative z-10 w-full grid lg:grid-cols-2 gap-12 items-center">
-                            <div className="space-y-8">
+                            <div className="space-y-6 sm:space-y-8">
                                 <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white dark:bg-slate-800 border border-pink-100 dark:border-slate-700 text-pink-500 text-[10px] font-bold uppercase tracking-widest shadow-sm">
                                     <${Sparkles} size=${14} /> <span>Dermatologist Approved Solutions</span>
                                 </div>
-                                <h1 className="text-5xl md:text-7xl font-serif font-bold text-slate-900 dark:text-slate-100 leading-[1.1]">Premium Medicated <span className="text-pink-400 italic">Skincare</span> & Haircare</h1>
-                                <p className="text-lg text-slate-600 dark:text-slate-400 leading-relaxed max-w-lg">Science-backed solutions for Pakistani skin. Experience the transformation with our high-potency ingredients designed for healthy results.</p>
+                                <h1 className="text-4xl md:text-7xl font-serif font-bold text-slate-900 dark:text-slate-100 leading-[1.1]">Premium Medicated <span className="text-pink-400 italic">Skincare</span> & Haircare</h1>
+                                <p className="text-base sm:text-lg text-slate-600 dark:text-slate-400 leading-relaxed max-w-lg">Science-backed solutions for Pakistani skin. Experience the transformation with our high-potency ingredients designed for healthy results.</p>
                                 <div className="flex flex-wrap gap-4 pt-4">
-                                    <button onClick=${() => navigate('products')} className="px-8 py-4 bg-slate-900 dark:bg-pink-400 text-white rounded-full font-medium hover:opacity-90 transition-all shadow-lg flex items-center gap-2">View Products <${ArrowRight} size=${18} /></button>
-                                    <${WAButton} variant="outline" className="px-8 py-4 bg-white dark:bg-slate-800" />
+                                    <button onClick=${() => navigate('products')} className="px-6 sm:px-8 py-3 sm:py-4 bg-slate-900 dark:bg-pink-400 text-white rounded-full font-medium hover:opacity-90 transition-all shadow-lg flex items-center gap-2">View Products <${ArrowRight} size=${18} /></button>
+                                    <${WAButton} variant="outline" className="px-6 sm:px-8 py-3 sm:py-4 bg-white dark:bg-slate-800" />
                                 </div>
                             </div>
                             <div className="hidden lg:block relative h-full">
@@ -320,15 +320,15 @@
                             </div>
                         </div>
                     </section>
-                    <section className="max-w-7xl mx-auto px-6 pb-24">
-                        <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
+                    <section className="max-w-7xl mx-auto px-4 sm:px-6 pb-24">
+                        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 sm:mb-12 gap-6">
                             <div className="max-w-xl">
-                                <h2 className="text-3xl md:text-4xl font-serif font-bold text-slate-900 dark:text-slate-100 mb-4">Our Bestsellers</h2>
-                                <p className="text-slate-600 dark:text-slate-400">Discover the products that are transforming beauty routines across Pakistan.</p>
+                                <h2 className="text-2xl sm:text-4xl font-serif font-bold text-slate-900 dark:text-slate-100 mb-2 sm:mb-4">Our Bestsellers</h2>
+                                <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400">Discover the products that are transforming beauty routines across Pakistan.</p>
                             </div>
                             <button onClick=${() => navigate('products')} className="text-pink-500 font-bold hover:text-pink-600 transition-colors flex items-center gap-2 group">Shop Collection <${ArrowRight} size=${18} className="group-hover:translate-x-1 transition-transform" /></button>
                         </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
                             ${products.filter(p => p.featured).map(p => html`<${ProductCard} key=${p.id} product=${p} />`)}
                         </div>
                     </section>
@@ -570,17 +570,17 @@
                 const [filter, setFilter] = useState('All');
                 const filtered = products.filter(p => filter === 'All' || p.category === filter);
                 return html`
-                    <div className="max-w-7xl mx-auto px-6 py-32 animate-fade-in min-h-screen">
-                        <div className="text-center max-w-2xl mx-auto mb-16 space-y-6">
-                            <h1 className="text-4xl md:text-5xl font-serif font-bold text-slate-900 dark:text-slate-100">The Collection</h1>
-                            <div className="flex justify-center gap-2 flex-wrap">
-                                <button onClick=${() => setFilter('All')} className="px-6 py-2 rounded-full text-sm font-medium transition-all ${filter === 'All' ? 'bg-pink-400 text-white shadow-md' : 'bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-pink-50 border border-pink-50 dark:border-slate-700'}">All</button>
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-24 sm:py-32 animate-fade-in min-h-screen">
+                        <div className="text-center max-w-2xl mx-auto mb-10 sm:mb-16 space-y-4 sm:space-y-6">
+                            <h1 className="text-3xl sm:text-5xl font-serif font-bold text-slate-900 dark:text-slate-100">The Collection</h1>
+                            <div className="flex justify-center gap-2 flex-wrap px-2">
+                                <button onClick=${() => setFilter('All')} className="px-4 sm:px-6 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-all ${filter === 'All' ? 'bg-pink-400 text-white shadow-md' : 'bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-pink-50 border border-pink-50 dark:border-slate-700'}">All</button>
                                 ${categories.map(cat => html`
-                                    <button key=${cat} onClick=${() => setFilter(cat)} className="px-6 py-2 rounded-full text-sm font-medium transition-all ${filter === cat ? 'bg-pink-400 text-white shadow-md' : 'bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-pink-50 border border-pink-50 dark:border-slate-700'}">${cat}</button>
+                                    <button key=${cat} onClick=${() => setFilter(cat)} className="px-4 sm:px-6 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-all ${filter === cat ? 'bg-pink-400 text-white shadow-md' : 'bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-pink-50 border border-pink-50 dark:border-slate-700'}">${cat}</button>
                                 `)}
                             </div>
                         </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
                             ${filtered.map(p => html`<${ProductCard} key=${p.id} product=${p} />`)}
                         </div>
                     </div>
